@@ -4,5 +4,5 @@ node_js:
   - '0.10'
 before_install:
   - currentfolder=${PWD##*/}
-  - if [ "$currentfolder" != 'generator-wpplugin' ]; then cd .. && eval "mv $currentfolder generator-wpplugin" && cd generator-wpplugin; fi
+  - if [ "$currentfolder" != 'generator-wpplug' ]; then cd .. && eval "mv $currentfolder generator-wpplug" && cd generator-wpplug; fi
 

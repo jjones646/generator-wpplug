@@ -1,27 +1,32 @@
 {
-  "name": "generator-wp-plugin-boilerplate",
-  "version": "0.1.0",
-  "description": "A generator for Yeoman to customize the WP Plugin Boilerplate (https://github.com/tommcfarlin/WordPress-Plugin-Boilerplate).",
+  "name": "generator-wpplug",
+  "version": "1.0.0",
+  "description": "A Yeoman generator based on the famous Wordpress Plugin Boilerplate https://github.com/tommcfarlin/WordPress-Plugin-Boilerplate.",
   "keywords": [
-    "yeoman", "yeoman-generator", "wordpress", "wordpress-plugin", "PHP"
+    "yeoman", "yeoman-generator", "wordpress", "wordpress-plugin", "php"
   ],
-  "homepage": "https://github.com/thiagolcks/generator-wp-plugin-boilerplate",
-  "bugs": "https://github.com/thiagolcks/generator-wp-plugin-boilerplate/issues",
+  "homepage": "https://github.com/jjones646/generator-wpplug",
+  "bugs": "https://github.com/jjones646/generator-wpplug/issues",
   "author": {
-    "name": "Thiago Locks",
-    "email": "thiago@zira.com.br",
-    "url": "https://github.com/thiagolcks"
+    "name": "Jonathan Jones",
+    "email": "jjones646@gmail.com",
+    "url": "https://github.com/jjones646"
   },
+  "files": [
+    "app",
+    "router"
+  ],
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/thiagolcks/generator-wp-plugin-boilerplate.git"
+    "url": "git://github.com/jjones646/generator-wpplug.git"
   },
   "scripts": {
     "test": "mocha"
   },
   "dependencies": {
     "yeoman-generator": "~0.14.0",
+    "wordpress-plugin-boilerplate" : "git://github.com/jjones646/WordPress-Plugin-Boilerplate#npm-yo",
     "request": "~2.29.0",
     "adm-zip": "~0.4.3",
     "rimraf": "~2.1",
