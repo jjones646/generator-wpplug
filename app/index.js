@@ -33,9 +33,13 @@ module.exports = generator.Base.extend({
     });
     try {
       require('git-remotes')(function(err, remotes) {
-        this.options.url = (this.options.url ? this.options.url : remotes[0].url);
+        var remote = (remotes[0] ? remotes[0] : {
+          url: 'https://example.com'
+        });
+        this.options.url = (this.options.url ? this.options.url : remote.url);
         try {
-          this.options.url = require('github-url-from-git')(this.options.url);
+          var ghUrl = require('github-url-from-git')(this.options.url);
+          this.options.url = (ghUrl ? ghUrl : this.options.url);
         } catch (e) {}
       }.bind(this));
     } catch (err) {
@@ -116,17 +120,6 @@ module.exports = generator.Base.extend({
       message: 'Please give a URL for this plugin (Website/GitHub/etc.):',
       default: this.options.url
     }, {
-      name: 'langResources',
-      type: 'checkbox',
-      message: 'Which resources will be needed for this plugin?',
-      choices: [{
-        name: 'css',
-        checked: true
-      }, {
-        name: 'js',
-        checked: true
-      }]
-    }, {
       name: 'needAdmin',
       type: 'confirm',
       message: 'Will this plugin need its own admin page?',
@@ -176,13 +169,9 @@ module.exports = generator.Base.extend({
       };
       this.version = ans.version;
       this.url = ans.url;
-      this.langResources = ans.langResources;
-      this.installRequirements = ans.installRequirements;
       this.needAdmin = ans.needAdmin;
       done();
     }.bind(this));
-
-    console.log(this.author);
   },
 
   // write out the new plugin scaffold
@@ -202,7 +191,7 @@ module.exports = generator.Base.extend({
     };
     // we create a zip array of the src/dst paths and iterate over them
     var rootFiles = _.zip(rootPaths('plugin-name'), rootPaths(this.pluginName.fileCase));
-    _.forEach(rootFiles, function(f) {
+    _.each(rootFiles, function(f) {
       this.fs.copyTpl(
         this.templatePath(f[0]),
         this.destinationPath(f[1]),
@@ -222,7 +211,7 @@ module.exports = generator.Base.extend({
     };
     // we create a zip array of the src/dst paths and iterate over them
     var incsFiles = _.zip(incPaths('plugin-name', 'includes'), incPaths(this.pluginName.fileCase, 'includes'));
-    _.forEach(incsFiles, function(f) {
+    _.each(incsFiles, function(f) {
       this.fs.copyTpl(
         this.templatePath(f[0]),
         this.destinationPath(f[1]),
@@ -245,8 +234,9 @@ module.exports = generator.Base.extend({
     var dstPaths = _.partial(genPaths, this.pluginName.fileCase);
     // we iterate over both public/admin directories and generate the paths
     // with the partials defined on the previous lines
-    _.forEach(['public', 'admin'], function(dir) {
-      _.forEach(_.zip(srcPaths(dir), dstPaths(dir)), function(f) {
+    var dirs = (this.needAdmin ? ['public', 'admin'] : ['public']);
+    _.each(dirs, function(dir) {
+      _.each(_.zip(srcPaths(dir), dstPaths(dir)), function(f) {
         this.fs.copyTpl(
           this.templatePath(f[0]),
           this.destinationPath(f[1]),
