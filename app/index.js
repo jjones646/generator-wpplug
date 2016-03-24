@@ -122,19 +122,19 @@ module.exports = generator.Base.extend({
         snakeCase: _.snakeCase(name),
         classCase: _.replace(_.startCase(name), ' ', '_')
       };
-      this.pluginVersion = ans.version;
       this.author = {
         name: _.startCase(ans.author),
         uri: ans.authorUri
       };
-      this.url = ans.url;
-      this.langResources = ans.langResources;
-      this.installRequirements = ans.installRequirements;
-      this.needAdmin = ans.needAdmin;
       this.license = {
         name: ans.license[0],
         uri: ans.license[1]
       };
+      this.pluginVersion = ans.version;
+      this.url = ans.url;
+      this.langResources = ans.langResources;
+      this.installRequirements = ans.installRequirements;
+      this.needAdmin = ans.needAdmin;
       done();
     }.bind(this));
   },
