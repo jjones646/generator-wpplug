@@ -125,7 +125,7 @@ module.exports = generator.Base.extend({
         titleCase: _.startCase(name),
         fileCase: _.kebabCase(name),
         snakeCase: _.snakeCase(name),
-        classCase: _.replace(_.startCase(name), ' ', '_')
+        classCase: name.split(' ').join('_')
       };
       this.author = {
         name: _.startCase(ans.author),
