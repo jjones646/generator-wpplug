@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('lodash'),
-  util = require('util'),
   path = require('path'),
   base = require('class-extend'),
   yeoman = require('yeoman-generator');
