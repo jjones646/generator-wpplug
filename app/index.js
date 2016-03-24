@@ -77,11 +77,11 @@ module.exports = generator.Base.extend({
 
   initializing: function() {
     var done = this.async();
-    var tmplRoot = path.join(this.sourceRoot(), 'wordpress-plugin-boilerplate');
+    var tmpltRoot = this.destinationPath('wordpress-plugin-boilerplate');
 
     // download the template files from this GitHub repo & branch
     this.remote('jjones646', 'WordPress-Plugin-Boilerplate', 'npm-yo', function(err, remote) {
-      this.fs.copy(remote.cachePath, tmplRoot, {
+      this.fs.copy(remote.cachePath, tmpltRoot, {
         globOptions: {
           dot: true
         }
@@ -89,7 +89,7 @@ module.exports = generator.Base.extend({
     }.bind(this), this.options.nocache);
 
     // reset the template path for the generator
-    this.sourceRoot(path.join(tmplRoot, 'plugin-name'));
+    this.sourceRoot(path.join(tmpltRoot, 'plugin-name'));
     done();
   },
 
@@ -253,6 +253,11 @@ module.exports = generator.Base.extend({
   },
 
   end: function() {
-
+    // remove the template files that we pulled in manually
+    this.fs.delete(path.resolve(this.sourceRoot(), '..'), {
+      globOptions: {
+        dot: true
+      }
+    });
   }
 });
