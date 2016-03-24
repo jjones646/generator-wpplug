@@ -1,15 +1,14 @@
 'use strict';
 
-var _ = require('lodash'),
-  path = require('path'),
-  base = require('class-extend'),
-  yeoman = require('yeoman-generator');
+var _ = require('lodash');
+var path = require('path');
+var generator = require('yeoman-generator');
 
-module.exports = yeoman.base.extend({
+module.exports = generator.Base.extend({
   // constructor for processing the optional name argument
   constructor: function() {
     // call 'base constructor'
-    yeoman.base.apply(this, arguments);
+    generator.Base.apply(this, arguments);
     // This makes `plugin-name` a required argument.
     this.argument('name', {
       type: String,
@@ -20,15 +19,18 @@ module.exports = yeoman.base.extend({
   initializing: function() {
     var done = this.async();
     var fss = this.fs;
-    var srcr = this.sourceRoot();
+    var tmplRoot = path.join(this.sourceRoot(), 'wordpress-plugin-boilerplate');
+    // default to this github repo and branch
     this.remote('jjones646', 'WordPress-Plugin-Boilerplate', 'npm-yo', function(err, remote) {
-      fss.copy(remote.cachePath, path.join(srcr, 'wordpress-plugin-boilerplate'), {
+      fss.copy(remote.cachePath, tmplRoot, {
         globOptions: {
           dot: true
         }
       });
-      done();
     });
+    // reset the template path for the generator
+    this.sourceRoot(path.join(tmplRoot, 'plugin-name'));
+    done();
   },
 
   //Ask for user input
@@ -113,7 +115,7 @@ module.exports = yeoman.base.extend({
 
     // process the answers from all the prompts here
     this.prompt(prompts, function(ans) {
-      var name = _.trim(_.deburr(this.name));
+      var name = _.trim(_.deburr(ans.name));
       this.pluginName = {
         titleCase: _.startCase(name),
         fileCase: _.kebabCase(name),
@@ -139,12 +141,13 @@ module.exports = yeoman.base.extend({
 
   writing: function() {
     this.fs.copyTpl(
-      this.templatePath('index.html'),
-      this.destinationPath('public/index.html'), {
-        title: this.pluginName.snakeCase,
-        title: this.pluginName.fileCase,
-        title: this.pluginName.classCase,
-        title: this.plugin.titleCase,
+      this.templatePath('plugin-name.php'),
+      this.destinationPath(this.pluginName.fileCase + '.php'), {
+        pluginName: this.pluginName,
+        version: this.pluginVersion,
+        license: this.license,
+        author: this.author,
+        url: this.url
       }
     );
   }
