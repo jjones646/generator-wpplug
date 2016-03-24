@@ -14,6 +14,11 @@ module.exports = generator.Base.extend({
       type: String,
       required: false
     });
+    // Add a '--nocache' flag for forcing out the template cache downloaded from github
+    this.option('nocache', {
+      desc: 'Force downloading the template files and don\'t depend on any cache',
+      default: false
+    });
   },
 
   initializing: function() {
@@ -27,7 +32,7 @@ module.exports = generator.Base.extend({
           dot: true
         }
       });
-    });
+    }, this.options.nocache);
     // reset the template path for the generator
     this.sourceRoot(path.join(tmplRoot, 'plugin-name'));
     done();
@@ -130,7 +135,7 @@ module.exports = generator.Base.extend({
         name: ans.license[0],
         uri: ans.license[1]
       };
-      this.pluginVersion = ans.version;
+      this.version = ans.version;
       this.url = ans.url;
       this.langResources = ans.langResources;
       this.installRequirements = ans.installRequirements;
