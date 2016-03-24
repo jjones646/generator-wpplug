@@ -39,3 +39,6 @@ jspm_packages
 # Sublime project files
 *.sublime-project
 *.sublime-workspace
+
+# Default plugin name for the generator
+my-amazing-plugin/

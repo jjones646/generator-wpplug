@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "A Yeoman generator based on the popular Wordpress-Plugin-Boilerplate.",
   "keywords": [
-    "yeoman",
     "yeoman-generator",
+    "yeoman",
+    "generator",
     "wordpress",
     "wordpress-plugin",
-    "php"
+    "php",
+    "boilerplate"
   ],
   "homepage": "https://github.com/jjones646/generator-wpplug",
   "bugs": "https://github.com/jjones646/generator-wpplug/issues",
@@ -25,11 +27,8 @@
   },
   "dependencies": {
     "yeoman-generator": "^0.20.2",
-    "lodash": "~4.6.1",
-    "path": "~0.12.7"
-  },
-  "peerDependencies": {
-    "yo": ">=1.0.0"
+    "lodash": "^4.6.1",
+    "path": "^0.12.7"
   },
   "licenses": [
     {

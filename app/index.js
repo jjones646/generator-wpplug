@@ -23,16 +23,15 @@ module.exports = generator.Base.extend({
 
   initializing: function() {
     var done = this.async();
-    var fss = this.fs;
     var tmplRoot = path.join(this.sourceRoot(), 'wordpress-plugin-boilerplate');
     // default to this github repo and branch
     this.remote('jjones646', 'WordPress-Plugin-Boilerplate', 'npm-yo', function(err, remote) {
-      fss.copy(remote.cachePath, tmplRoot, {
+      this.fs.copy(remote.cachePath, tmplRoot, {
         globOptions: {
           dot: true
         }
       });
-    }, this.options.nocache);
+    }.bind(this), this.options.nocache);
     // reset the template path for the generator
     this.sourceRoot(path.join(tmplRoot, 'plugin-name'));
     done();
@@ -71,20 +70,6 @@ module.exports = generator.Base.extend({
         checked: true
       }, {
         name: 'js',
-        checked: true
-      }],
-    }, {
-      name: 'installRequirements',
-      type: 'checkbox',
-      message: 'Select which installation/removal options will be supported for this plugin?',
-      choices: [{
-        name: 'Activate',
-        checked: true
-      }, {
-        name: 'Deactivate',
-        checked: true
-      }, {
-        name: 'Uninstall',
         checked: true
       }]
     }, {
@@ -146,12 +131,78 @@ module.exports = generator.Base.extend({
 
   // write out the new plugin scaffold
   writing: function() {
-    // reset the destination path to be in a directory at the current destination path
+    // reset the destination path to be in a directory in the current one
     this.destinationRoot(path.join(this.destinationRoot(), this.pluginName.fileCase));
-    // copy the files into this new directory, updating the names in the process
+
+    // process the files for the root of the plugin directory
+    var rootPaths = function(name) {
+      return [
+        name + '.php',
+        'README.txt',
+        'LICENSE.txt',
+        'index.php',
+        'uninstall.php'
+      ];
+    };
+    // we create a zip array of the src/dst paths and iterate over them
+    var rootFiles = _.zip(rootPaths('plugin-name'), incPaths(this.pluginName.fileCase));
+    _.forEach(rootFiles, function(f) {
+      this.fs.copyTpl(
+        this.templatePath(f[0]),
+        this.destinationPath(f[1]),
+        this
+      );
+    }.bind(this));
+
+    // these are the paths for the files in the include directory
+    var incPaths = function(name) {
+      return [
+        path.join('includes', 'class-' + name + '.php'),
+        path.join('includes', 'class-' + name + '-activator.php'),
+        path.join('includes', 'class-' + name + '-deactivator.php'),
+        path.join('includes', 'class-' + name + '-i18n.php'),
+        path.join('includes', 'index.php')
+      ];
+    };
+    // we create a zip array of the src/dst paths and iterate over them
+    var incsFiles = _.zip(incPaths('plugin-name'), incPaths(this.pluginName.fileCase));
+    _.forEach(incFiles, function(f) {
+      this.fs.copyTpl(
+        this.templatePath(f[0]),
+        this.destinationPath(f[1]),
+        this
+      );
+    }.bind(this));
+
+    // these are the paths for the files in the public/admin directories
+    var genPaths = function(name, dir) {
+      return [
+        path.join(dir, 'class-' + name + '-' + dir + '.php'),
+        path.join(dir, 'js', name + '-' + dir + '.js'),
+        path.join(dir, 'css', name + '-' + dir + '.css'),
+        path.join(dir, 'partials', name + '-' + dir + '-display.php'),
+        path.join(dir, 'index.php')
+      ];
+    };
+    // defines 2 partials that return the src/dst file paths for a given directory name
+    var srcPaths = _.partial(genPaths, 'plugin-name');
+    var dstPaths = _.partial(genPaths, this.pluginName.fileCase);
+    // we iterate over both public/admin directories and generate the paths
+    // with the partials defined on the previous lines
+    _.forEach(['public', 'admin'], function(dir) {
+      _.forEach(_.zip(srcPaths(dir), dstPaths(dir)), function(f) {
+        this.fs.copyTpl(
+          this.templatePath(f[0]),
+          this.destinationPath(f[1]),
+          this
+        );
+      }.bind(this));
+    }.bind(this));
+
+    // now all we have left is the languages directory, just 1 file there
     this.fs.copyTpl(
-      this.templatePath('plugin-name.php'),
-      this.destinationPath(this.pluginName.fileCase + '.php'),
+      this.templatePath(path.join('languages', 'plugin-name.pot')),
+      this.destinationPath(path.join('languages', this.pluginName.fileCase + '.pot')),
       this
     );
   }
