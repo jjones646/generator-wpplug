@@ -2,7 +2,6 @@
 
 var _ = require('lodash'),
   path = require('path'),
-  util = require('util'),
   generator = require('yeoman-generator');
 
 function prettyName(str) {

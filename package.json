@@ -12,12 +12,10 @@
     "boilerplate"
   ],
   "homepage": "https://github.com/jjones646/generator-wpplug",
-  "bugs": "https://github.com/jjones646/generator-wpplug/issues",
-  "author": {
-    "name": "Jonathan Jones",
-    "email": "jjones646@gmail.com",
-    "url": "https://github.com/jjones646"
+  "bugs": {
+    "url": "https://github.com/jjones646/generator-wpplug/issues"
   },
+  "author": "Jonathan Jones <jjones646@gmail.com> (https://github.com/jjones646)",
   "files": [
     "app"
   ],
@@ -34,9 +32,10 @@
     "git-remotes": "^1.0.2",
     "github-url-from-git": "^1.4.0"
   },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ]
+  "license": "MIT",
+  "main": "app/index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }
