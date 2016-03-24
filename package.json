@@ -1,6 +1,6 @@
 {
   "name": "generator-wpplug",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Yeoman generator based on the popular Wordpress-Plugin-Boilerplate.",
   "keywords": [
     "yeoman-generator",
