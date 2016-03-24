@@ -139,16 +139,15 @@ module.exports = generator.Base.extend({
     }.bind(this));
   },
 
+  // write out the new plugin scaffold
   writing: function() {
+    // reset the destination path to be in a directory at the current destination path
+    this.destinationRoot(path.join(this.destinationRoot(), this.pluginName.fileCase));
+    // copy the files into this new directory, updating the names in the process
     this.fs.copyTpl(
       this.templatePath('plugin-name.php'),
-      this.destinationPath(this.pluginName.fileCase + '.php'), {
-        pluginName: this.pluginName,
-        version: this.pluginVersion,
-        license: this.license,
-        author: this.author,
-        url: this.url
-      }
+      this.destinationPath(this.pluginName.fileCase + '.php'),
+      this
     );
   }
 });
