@@ -1,9 +1,13 @@
 {
   "name": "generator-wpplug",
   "version": "1.0.0",
-  "description": "A Yeoman generator based on the famous Wordpress Plugin Boilerplate https://github.com/tommcfarlin/WordPress-Plugin-Boilerplate.",
+  "description": "A Yeoman generator based on the popular Wordpress-Plugin-Boilerplate.",
   "keywords": [
-    "yeoman", "yeoman-generator", "wordpress", "wordpress-plugin", "php"
+    "yeoman",
+    "yeoman-generator",
+    "wordpress",
+    "wordpress-plugin",
+    "php"
   ],
   "homepage": "https://github.com/jjones646/generator-wpplug",
   "bugs": "https://github.com/jjones646/generator-wpplug/issues",
@@ -16,25 +20,15 @@
     "app",
     "router"
   ],
-  "main": "app/index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/jjones646/generator-wpplug.git"
   },
-  "scripts": {
-    "test": "mocha"
-  },
   "dependencies": {
-    "yeoman-generator": "~0.14.0",
-    "wordpress-plugin-boilerplate" : "git://github.com/jjones646/WordPress-Plugin-Boilerplate#npm-yo",
-    "request": "~2.29.0",
-    "adm-zip": "~0.4.3",
-    "rimraf": "~2.1",
-    "underscore.string": "~2.3",
-    "ncp": "~0.4.2"
-  },
-  "devDependencies": {
-    "mocha": "~1.14.0"
+    "yeoman-generator": "^0.20.2",
+    "class-extend": "^0.1.2",
+    "lodash": "^4.6.1",
+    "util": "^0.10.3"
   },
   "peerDependencies": {
     "yo": ">=1.0.0"
