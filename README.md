@@ -25,7 +25,7 @@ sudo npm install -g yo
 To install this generator for use with the `yo` command, use the following command:
 
 ```
-npm install -g generator-wpplug
+sudo npm install -g generator-wpplug
 ```
 
 ### How to Use
@@ -41,7 +41,7 @@ Now use the `yo` command to create the template for your new plugin.
 
 ```
 # Run the generator
-yo wpplug-generator
+yo wpplug
 ```
 
 
