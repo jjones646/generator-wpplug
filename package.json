@@ -28,7 +28,11 @@
   "dependencies": {
     "yeoman-generator": "^0.20.2",
     "lodash": "^4.6.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "git-user-name": "^1.2.0",
+    "git-user-email": "^0.2.1",
+    "git-remotes": "^1.0.2",
+    "github-url-from-git": "^1.4.0"
   },
   "licenses": [
     {

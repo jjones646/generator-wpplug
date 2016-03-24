@@ -1,19 +1,70 @@
 'use strict';
 
-var _ = require('lodash');
-var path = require('path');
-var generator = require('yeoman-generator');
+var _ = require('lodash'),
+  path = require('path'),
+  util = require('util'),
+  generator = require('yeoman-generator');
+
+function prettyName(str) {
+  var strA = [];
+  str = _.toLower(_.trim(_.deburr(str)))
+  strA = _.split(str, ' ');
+  strA = _.flatMap(strA, _.upperFirst)
+  return _.join(strA, ' ');
+}
 
 module.exports = generator.Base.extend({
   // constructor for processing the optional name argument
   constructor: function() {
     // call 'base constructor'
     generator.Base.apply(this, arguments);
-    // This makes `plugin-name` a required argument.
+
+    // Add some optional arguments over the command line
     this.argument('name', {
       type: String,
       required: false
     });
+    this.options.name = (this.options.name ? this.options.name : 'My Amazing Plugin');
+    this.options.name = prettyName(this.options.name);
+
+    this.argument('url', {
+      type: String,
+      required: false
+    });
+    try {
+      require('git-remotes')(function(err, remotes) {
+        this.options.url = (this.options.url ? this.options.url : remotes[0].url);
+        try {
+          this.options.url = require('github-url-from-git')(this.options.url);
+        } catch (e) {}
+      }.bind(this));
+    } catch (err) {
+      this.options.url = (this.options.url ? this.options.url : 'https://github.com/<username>/<repository-name>');
+    }
+
+    this.argument('author-uri', {
+      type: String,
+      required: false
+    });
+    try {
+      var email = require('git-user-email')();
+      this.options.authorUri = (this.options.authorUri ? this.options.authorUri : email);
+    } catch (err) {
+      this.options.authorUri = (this.options.authorUri ? this.options.authorUri : 'george.burdell@gmail.com');
+    }
+
+    this.argument('author-name', {
+      type: String,
+      required: false
+    });
+    try {
+      var userName = require('git-user-name')();
+      this.options.authorName = (this.options.authorName ? this.options.authorName : userName);
+    } catch (err) {
+      this.options.authorName = (this.options.authorName ? this.options.authorName : 'George Burdell');
+    }
+    this.options.authorName = prettyName(this.options.authorName);
+
     // Add a '--nocache' flag for forcing out the template cache downloaded from github
     this.option('nocache', {
       desc: 'Force downloading the template files and don\'t depend on any cache',
@@ -24,7 +75,8 @@ module.exports = generator.Base.extend({
   initializing: function() {
     var done = this.async();
     var tmplRoot = path.join(this.sourceRoot(), 'wordpress-plugin-boilerplate');
-    // default to this github repo and branch
+
+    // download the template files from this GitHub repo & branch
     this.remote('jjones646', 'WordPress-Plugin-Boilerplate', 'npm-yo', function(err, remote) {
       this.fs.copy(remote.cachePath, tmplRoot, {
         globOptions: {
@@ -32,6 +84,7 @@ module.exports = generator.Base.extend({
         }
       });
     }.bind(this), this.options.nocache);
+
     // reset the template path for the generator
     this.sourceRoot(path.join(tmplRoot, 'plugin-name'));
     done();
@@ -40,11 +93,12 @@ module.exports = generator.Base.extend({
   //Ask for user input
   prompting: function() {
     var done = this.async();
+
     // The user prompts during plugin creation
     var prompts = [{
       name: 'name',
       message: 'What will be the name for the new plugin?',
-      default: 'My Amazing Plugin'
+      default: prettyName(this.options.name)
     }, {
       name: 'version',
       message: 'What will be the starting version?',
@@ -52,15 +106,15 @@ module.exports = generator.Base.extend({
     }, {
       name: 'author',
       message: 'Please give the author\'s name (First & Last):',
-      default: 'George Burdell'
+      default: prettyName(this.options.authorName)
     }, {
       name: 'authorUri',
       message: 'Please give an Email or URL for the author:',
-      default: 'https://githum.com/'
+      default: this.options.authorUri
     }, {
       name: 'url',
       message: 'Please give a URL for this plugin (Website/GitHub/etc.):',
-      default: 'https://githum.com/'
+      default: this.options.url
     }, {
       name: 'langResources',
       type: 'checkbox',
@@ -105,15 +159,15 @@ module.exports = generator.Base.extend({
 
     // process the answers from all the prompts here
     this.prompt(prompts, function(ans) {
-      var name = _.trim(_.deburr(ans.name));
+      var name = _.toLower((ans.name));
       this.pluginName = {
-        titleCase: _.startCase(name),
+        titleCase: prettyName(name),
         fileCase: _.kebabCase(name),
         snakeCase: _.snakeCase(name),
-        classCase: name.split(' ').join('_')
+        classCase: _.startCase(name).split(' ').join('_')
       };
       this.author = {
-        name: _.startCase(ans.author),
+        name: prettyName(ans.author),
         uri: ans.authorUri
       };
       this.license = {
@@ -127,6 +181,8 @@ module.exports = generator.Base.extend({
       this.needAdmin = ans.needAdmin;
       done();
     }.bind(this));
+
+    console.log(this.author);
   },
 
   // write out the new plugin scaffold
@@ -145,7 +201,7 @@ module.exports = generator.Base.extend({
       ];
     };
     // we create a zip array of the src/dst paths and iterate over them
-    var rootFiles = _.zip(rootPaths('plugin-name'), incPaths(this.pluginName.fileCase));
+    var rootFiles = _.zip(rootPaths('plugin-name'), rootPaths(this.pluginName.fileCase));
     _.forEach(rootFiles, function(f) {
       this.fs.copyTpl(
         this.templatePath(f[0]),
@@ -155,18 +211,18 @@ module.exports = generator.Base.extend({
     }.bind(this));
 
     // these are the paths for the files in the include directory
-    var incPaths = function(name) {
+    var incPaths = function(name, dir) {
       return [
-        path.join('includes', 'class-' + name + '.php'),
-        path.join('includes', 'class-' + name + '-activator.php'),
-        path.join('includes', 'class-' + name + '-deactivator.php'),
-        path.join('includes', 'class-' + name + '-i18n.php'),
-        path.join('includes', 'index.php')
+        path.join(dir, 'class-' + name + '.php'),
+        path.join(dir, 'class-' + name + '-activator.php'),
+        path.join(dir, 'class-' + name + '-deactivator.php'),
+        path.join(dir, 'class-' + name + '-i18n.php'),
+        path.join(dir, 'index.php')
       ];
     };
     // we create a zip array of the src/dst paths and iterate over them
-    var incsFiles = _.zip(incPaths('plugin-name'), incPaths(this.pluginName.fileCase));
-    _.forEach(incFiles, function(f) {
+    var incsFiles = _.zip(incPaths('plugin-name', 'includes'), incPaths(this.pluginName.fileCase, 'includes'));
+    _.forEach(incsFiles, function(f) {
       this.fs.copyTpl(
         this.templatePath(f[0]),
         this.destinationPath(f[1]),
@@ -205,5 +261,9 @@ module.exports = generator.Base.extend({
       this.destinationPath(path.join('languages', this.pluginName.fileCase + '.pot')),
       this
     );
+  },
+
+  end: function() {
+
   }
 });
