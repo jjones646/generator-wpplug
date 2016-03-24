@@ -17,8 +17,7 @@
     "url": "https://github.com/jjones646"
   },
   "files": [
-    "app",
-    "router"
+    "app"
   ],
   "repository": {
     "type": "git",
@@ -31,10 +30,6 @@
   },
   "peerDependencies": {
     "yo": ">=1.0.0"
-  },
-  "engines": {
-    "node": ">=0.8.0",
-    "npm": ">=1.2.10"
   },
   "licenses": [
     {
